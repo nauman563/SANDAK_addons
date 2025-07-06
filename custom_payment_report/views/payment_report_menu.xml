@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_deduction_report_wizard_form" model="ir.ui.view">
+            <field name="name">payment.report.wizard.form</field>
+            <field name="model">payment.deduction.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Payment Report">
+                    <group>
+                        <field name="journal_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="from_date"/>
+                        <field name="to_date"/>
+                    </group>
+                    <footer>
+                        <button name="generate_pdf_report" type="object" string="Print Report" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_payment_deduction_report_wizard" model="ir.actions.act_window">
+            <field name="name">Payment Report</field>
+            <field name="res_model">payment.deduction.report.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+<!--        <menuitem id="menu_payment_report_root" name="Payment Report"/>-->
+
+        <menuitem id="menu_payment_report_root" name="Payment Report" parent="account.menu_finance_reports"/>
+        <menuitem id="menu_payment_report" name="Print Payment Deductions Report" action="action_payment_deduction_report_wizard"
+                  parent="menu_payment_report_root"/>
+    </data>
+</odoo> 

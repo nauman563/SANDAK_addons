@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_payment_of_deductions">
+            <t t-call="web.html_container">
+                <t t-call="web.basic_layout">
+                    <div class="page report-page">
+                        <style>
+                            @font-face {
+                            font-family: 'times_new_roman';
+                            src: url('/custom_payment_report/static/src/fonts/times_new_roman.ttf')
+                            format('truetype');
+                            }
+                            @font-face {
+                            font-family: 'times_new_roman_bold';
+                            src: url('/custom_payment_report/static/src/fonts/times_new_roman_bold')
+                            format('truetype');
+                            }
+                            @font-face {
+                            font-family: 'times_new_roman_bold_italic';
+                            src: url('/custom_payment_report/static/src/fonts/times_new_roman_bold_italic.ttf')
+                            format('truetype');
+                            }
+                            @font-face {
+                            font-family: 'times_new_roman_italic';
+                            src: url('/custom_payment_report/static/src/fonts/times_new_roman_italic.ttf')
+                            format('truetype');
+                            }
+                        </style>
+                        <style>
+                            @page {
+                            margin: 10mm 10mm 10mm 10mm; /* Reduced margins */
+                            size: A4; /* Standard A4 size */
+                            }
+                            .report-page {
+                            font-size: 12px; /* Reduced font size */
+                            margin: 0;
+                            padding: 0;
+                            }
+                            .table td, .table th {
+                            padding: 4px; /* Reduced cell padding */
+                            line-height: 1.2; /* Reduced line height */
+                            }
+                            .row {
+                            margin: 0;
+                            padding: 0;
+                            }
+                            .text-start { text-align: left; }
+                            .text-left { text-align: left; }
+                            .text-right { text-align: right; }
+                            .header-section {
+                            margin-bottom: 10px;
+                            }
+                            .bank_summary_id {
+                            font-family: 'times_new_roman';
+                            font-size: 11px;
+                            }
+                        </style>
+
+                        <div class="oe_structure"/>
+                        <!--                        <div class="row">-->
+                        <!--                            <div class="col-1"/>-->
+                        <!--                            <div class="col-1">-->
+                        <!--                                <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" alt="Logo"-->
+                        <!--                                     style="width:85px"/>-->
+                        <!--                            </div>-->
+                        <!--                            <div class="col-9 text-center">-->
+                        <!--                                <h2 style="font-weight: bold; font-family: 'times_new_roman';" class="times">-->
+                        <!--                                    Saindak Metals Limited-->
+                        <!--                                </h2>-->
+                        <!--                                <h6 class="times" style="font-weight: bold; font-family: 'times_new_roman';">-->
+                        <!--                                    <u>Jail Road Lahore-Pakistan. Tele:9203072,9201950,-->
+                        <!--                                    </u>-->
+                        <!--                                </h6>-->
+                        <!--&lt;!&ndash;                                <h4 style="font-family: 'times_new_roman_italic';">&ndash;&gt;-->
+                        <!--&lt;!&ndash;                                    OFFICE OF THE TREASURER&ndash;&gt;-->
+                        <!--&lt;!&ndash;                                </h4>&ndash;&gt;-->
+                        <!--                                <h3 style="font-weight: bold; font-family: 'times_new_roman';">-->
+                        <!--                                    DEDUCTIONS FOR THE MONTH OF-->
+                        <!--                                    <t t-esc="formatted_date"/>-->
+                        <!--                                </h3>-->
+                        <!--                                &lt;!&ndash;                                <t t-if="journals">&ndash;&gt;-->
+                        <!--                                &lt;!&ndash;                                    <h4 style="font-family: 'times_new_roman';">&ndash;&gt;-->
+                        <!--                                &lt;!&ndash;                                        Selected Banks: <t t-esc="', '.join(journals.mapped('name'))"/>&ndash;&gt;-->
+                        <!--                                &lt;!&ndash;                                    </h4>&ndash;&gt;-->
+                        <!--                                &lt;!&ndash;                                </t>&ndash;&gt;-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                        <div class="row">
+                            <div class="col-1"/>
+                            <div class="col-1">
+                                <img t-if="res_company.logo" t-att-src="image_data_uri(res_company.logo)" alt="Logo"
+                                     style="width:85px"/>
+                            </div>
+                            <div class="col-9 text-center">
+                                <h2 style="font-weight: bold; font-family: 'times_new_roman';" class="times">
+                                    <t t-esc="res_company.name"/>
+                                </h2>
+                                <h6 class="times" style="font-weight: bold; font-family: 'times_new_roman';">
+                                    <u>
+                                        <t t-if="res_company.street">
+                                            <t t-esc="res_company.street"/>
+                                        </t>
+                                        <t t-if="res_company.city">,
+                                            <t t-esc="res_company.city"/>
+                                        </t>
+                                        <t t-if="res_company.country_id">,
+                                            <t t-esc="res_company.country_id.name"/>
+                                        </t>
+                                        .
+                                        <t t-if="res_company.phone">Tel:
+                                            <t t-esc="res_company.phone"/>
+                                        </t>
+                                    </u>
+                                </h6>
+
+                                <h3 style="font-weight: bold; font-family: 'times_new_roman';">
+                                    DEDUCTIONS FOR THE MONTH OF
+                                    <t t-esc="formatted_date"/>
+                                </h3>
+                            </div>
+                        </div>
+
+                        <!-- Initialize check_numbers dictionary -->
+                        <t t-set="check_numbers" t-value="dict.fromkeys(all_tax_names or [], '')"/>
+
+                        <table class="table table-sm o_main_table "
+                               style="width: 100%; border-collapse: collapse;">
+                            <t t-set="counter" t-value="0"/>
+                            <thead style="text-align:center; font-family: 'times_new_roman'; font-size:12px;">
+                                <tr style="border: 1px solid black;">
+                                    <strong>
+                                        <th width="4.76%">Sr.#</th>
+                                    </strong>
+                                    <th>Vr.#</th>
+                                    <th>Dated</th>
+                                    <th>Cheque No.</th>
+                                    <th>Particulars</th>
+                                    <th>Net Amount</th>
+                                    <th>Head Of A/c</th>
+                                    <th>Bank</th>
+                                    <th>Status</th>
+                                    <th>Bill No</th>
+                                    <th>Dated</th>
+                                    <th>Employees Name</th>
+                                    <th>CNIC</th>
+
+                                    <t t-foreach="all_tax_names or []" t-as="tax_name">
+                                        <th>
+                                            <t t-esc="tax_name"/>
+                                        </th>
+                                    </t>
+                                    <th>Total Tax</th>
+                                    <th>Gross Amount</th>
+                                </tr>
+                            </thead>
+
+                            <t t-set="line_count" t-value="len(docs.reconciled_bill_ids.invoice_line_ids)"/>
+
+                            <tbody class="bank_summary_id" style="font-family: 'times_new_roman'; font-size:12px;">
+                                <!-- Initialize tax_totals and check_numbers at the start -->
+                                <t t-set="tax_totals" t-value="{}"/>
+                                <t t-set="check_numbers" t-value="{}"/>
+                                <t t-foreach="all_tax_names or []" t-as="tax_name">
+                                    <t t-set="tax_totals" t-value="dict(tax_totals, **{tax_name: 0.0})"/>
+                                    <t t-set="check_numbers" t-value="dict(check_numbers, **{tax_name: ''})"/>
+                                </t>
+                                <t t-set="total_net_paid" t-value="0.0"/>
+                                <t t-set="total_tax" t-value="0.0"/>
+
+                                <t t-foreach="docs" t-as="payment">
+                                    <t t-foreach="payment.reconciled_bill_ids.invoice_line_ids" t-as="line">
+                                        <tr>
+                                            <td class="text-start">
+                                                <t t-set="counter" t-value="counter + 1"/>
+                                                <span t-esc="counter"/>
+                                            </td>
+                                            <td class="text-start">
+                                                <t t-esc="payment.name"/>
+                                            </td>
+                                            <td class="text-start">
+                                                <t t-esc="payment.date.strftime('%d-%b-%Y')"/>
+                                            </td>
+                                            <td class="text-start">
+                                                <t t-esc="payment.check_number"/>
+                                            </td>
+                                            <td class="text-start">
+                                                <t t-esc="payment.partner_id.name"/>
+                                            </td>
+
+                                            <t t-set="gross" t-value="line.quantity * line.price_unit"/>
+                                            <t t-set="total_of_tax" t-value="sum(tx.amount for tx in line.tax_ids)"/>
+                                            <t t-set="net_paid" t-value="gross + total_of_tax"/>
+                                            <t t-set="total_net_paid" t-value="total_net_paid + net_paid"/>
+                                            <t t-set="total_tax" t-value="total_tax + total_of_tax"/>
+
+                                            <td>
+                                                <t t-esc="net_paid"/>
+                                            </td>
+                                            <td class="text-start">
+                                                <t t-esc="line.account_id.name"/>
+                                            </td>
+                                            <td class="text-start">
+                                                <t t-esc="payment.journal_id.name"/>
+                                            </td>
+                                            <td class="text-start">
+                                                <t t-esc="line.move_id.payment_state"/>
+                                            </td>
+                                            <td class="text-start">
+                                                <t t-esc="line.move_id.name"/>
+                                            </td>
+                                            <td class="text-start">
+                                                <t t-esc="line.move_id.invoice_date"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.emp_name"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.emp_name.identification_id"/>
+                                            </td>
+
+                                            <t t-foreach="all_tax_names or []" t-as="tax_name">
+                                                <t t-set="this_tax" t-value="0.0"/>
+                                                <t t-foreach="line.tax_ids" t-as="tx">
+                                                    <t t-if="tx.name == tax_name">
+                                                        <t t-set="this_tax" t-value="tx.amount"/>
+                                                        <t t-set="tax_totals"
+                                                           t-value="dict(tax_totals, **{tax_name: tax_totals[tax_name] + this_tax})"/>
+                                                        <t t-set="check_numbers"
+                                                           t-value="dict(check_numbers, **{tax_name: payment.check_number or ''})"/>
+                                                    </t>
+                                                </t>
+                                                <td>
+                                                    <t t-esc="this_tax"/>
+                                                </td>
+                                            </t>
+
+                                            <td>
+                                                <t t-esc="total_of_tax"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="gross"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+
+                                <!-- Total Row -->
+                                <tr>
+                                    <th colspan="5">Total</th>
+                                    <th>
+                                        <t t-esc="total_net_paid"/>
+                                    </th>
+                                    <th colspan="7"></th>
+                                    <t t-foreach="all_tax_names or []" t-as="tax_name">
+                                        <th>
+                                            <t t-esc="tax_totals[tax_name]"/>
+                                        </th>
+                                    </t>
+                                    <th>
+                                        <t t-esc="total_tax"/>
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <t t-if="line_count > 6">
+                            <div style="page-break-before: always;"/>
+                        </t>
+
+                        <!-- Summary Table -->
+                        <div class="row mt-4">
+                            <div class="col-5">
+                                <table class="table table-bordered" style="margin-left: 20px;">
+                                    <thead>
+                                        <tr>
+                                            <th>Sr.#</th>
+                                            <th>Particulars</th>
+                                            <th>Amount</th>
+                                            <th>Cheque No.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-set="counter" t-value="1"/>
+                                        <t t-foreach="all_tax_names or []" t-as="tax_name">
+                                            <tr>
+                                                <td>
+                                                    <t t-esc="counter"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="tax_name"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="tax_totals[tax_name]"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="check_numbers[tax_name]"/>
+                                                </td>
+                                            </tr>
+                                            <t t-set="counter" t-value="counter + 1"/>
+                                        </t>
+                                        <tr>
+                                            <td colspan="2" class="text-right">
+                                                <strong>Total</strong>
+                                            </td>
+                                            <td>
+                                                <t t-esc="total_tax"/>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Signature Section -->
+                        <div class="row" style="margin-top: 100px;">
+                            <div class="col-4 text-center">
+                                <p style="border-top: 1px solid black; display: inline-block; padding-top: 5px;">
+
+                                    Manager
+                                </p>
+                            </div>
+                            <div class="col-4 text-center">
+                                <p style="border-top: 1px solid black; display: inline-block; padding-top: 5px;">
+                                    Deputy Manager
+                                </p>
+                            </div>
+                            <div class="col-4 text-center">
+                                <p style="border-top: 1px solid black; display: inline-block; padding-top: 5px;">
+                                    Supervisor
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <record id="paperformat_deduction_report_template" model="report.paperformat">
+            <field name="name">Travelling Allowance Bill</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">5</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">5</field>
+            <field name="dpi">90</field>
+        </record>
+        <record id="employee_deduction_action_id" model="ir.actions.report">
+            <field name="name">Bank Summary Report</field>
+            <field name="model">account.payment</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="paperformat_id" ref="custom_payment_report.paperformat_deduction_report_template"/>
+            <field name="report_name">custom_payment_report.report_payment_of_deductions</field>
+            <field name="report_file">custom_payment_report.report_payment_of_deductions</field>
+            <!--            <field name="paperformat_id" ref="paperformat_invoice_custome_report"/>-->
+
+        </record>
+
+        <!--        <report-->
+        <!--                id="employee_deduction_action_id"-->
+        <!--                model="account.payment"-->
+        <!--                string="Bank Summary Report"-->
+        <!--                name="lcwu_customization.report_payment_of_deductions"-->
+        <!--                report_type="qweb-pdf"-->
+        <!--                paperformat="lcwu_customization.paperformat_deduction_report_template"-->
+        <!--        />-->
+    </data>
+</odoo>
