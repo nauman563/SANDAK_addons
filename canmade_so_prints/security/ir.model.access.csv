@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_canmade_so_print_canmade_so_print,canmade_so_print.canmade_so_print,model_canmade_so_print_canmade_so_print,base.group_user,1,1,1,1
+access_so_history_user,access.so.history.user,model_sale_order,base.group_user,1,0,0,0
+access_last_orders_line,sale.order.last.orders.line,model_sale_order_last_orders_line,base.group_user,1,0,0,0
+
+

@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="purchase_order_temp_id">
+            <t t-call="web.html_container">
+                <t t-call="web.basic_layout">
+                    <style>
+
+                        .custom-border-tr td, .custom-border-tr th {
+                        border: 1px solid black; /* 1px black border for td and th within tr */
+                        }
+
+                        .custom-border-td {
+                        border: 1px solid black; /* 1px black border for individual td */
+                        }
+                        /* Add font size rule */
+                        body {
+                        font-size: 10pt;
+                        }
+                    </style>
+                    <t t-foreach="docs" t-as="o">
+                        <div class="header">
+                            <!-- Date and Time -->
+                            <div class="row">
+                                <div class="col-4 text-left" style="font-size: small;">
+                                    <span t-esc="datetime.datetime.now().strftime('%d-%m-%Y %I:%M:%S %p')"/>
+                                </div>
+
+                                <div class="col-4 offset-4" style="position: relative;">
+                                    <small style="position: absolute; right: 0; top: 0; font-size: small;">
+                                        <span>Page</span>
+                                        <span class="page"/>
+                                        of
+                                        <span class="topage"/>
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4"
+                                     style="font-size:12px;  font-size: small; font-family:Verdana, Arial,sans-serif;">
+                                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"
+                                         style="max-height: 80px; max-width: 80%; margin-top: 15px;"
+                                         alt="Logo"/>
+                                    <p t-field="o.company_id.partner_id.contact_address"
+                                       style="margin: 0;"/>
+                                    <p t-if="o.company_id.phone" style="margin: 0;">Phone:
+                                        <span t-field="o.company_id.phone"/>
+                                    </p>
+                                    <p t-if="o.company_id.email" style="margin: 0;">Email:
+                                        <span t-field="o.company_id.email"/>
+                                    </p>
+                                    <p t-if="o.company_id.website" style="margin: 0;">Website:
+                                        <span t-field="o.company_id.website"/>
+                                    </p>
+                                </div>
+                                <!--<div class="col-4 text-left"
+                                     style="font-size: small;padding-left: 0; margin-left: 0; margin-right: 0;margin-top: 15px;margin-bottom: 0;">
+
+                                </div>-->
+                                <!--                                <div class="col-4" style="text-right"></div>-->
+                                <div class="col-4 offset-4" style="tex-align: right; margin-top: 15px;" align="right">
+
+                                    <h3 class="fw-bold mt-2">
+                                        <strong>Purchase Order</strong>
+                                    </h3>
+                                </div>
+                            </div>
+
+
+                            <!--                            <div class="row" style="border-bottom:2px solid black"/>-->
+
+
+                        </div>
+                        <!--                        <hr style="border-top: 1px solid #000; margin-top: 210px 0;"/>-->
+                        <div class="page"
+                             style="font-size:14px; font-family: 'Times New Roman', Times, serif; color: #333; ">
+
+                            <!-- Company Logo and Address -->
+
+                            <br></br>
+                            <br></br>
+                            <div class="row">
+                                <div class="col-4">
+
+                                    <h6>
+                                        <strong>Vendor Detail:</strong>
+                                    </h6>
+
+                                    <p style="margin: 1;">
+                                        <span t-field="o.partner_id"/>
+                                    </p>
+                                    <p style="margin: 1;"><span t-field="o.partner_id.street"/>,
+                                        <span t-field="o.partner_id.street2"/>
+                                    </p>
+                                    <p style="margin: 1;"><span t-field="o.partner_id.city"/>,
+                                        <span t-field="o.partner_id.state_id"/>,
+                                        <span t-field="o.partner_id.zip"/>
+                                    </p>
+                                    <p style="margin: 1;">
+                                        <span t-field="o.partner_id.phone"/>
+                                    </p>
+                                    <p style="margin: 1;">
+                                        <span t-field="o.partner_id.email"/>
+                                    </p>
+                                </div>
+                                <div class="col-4"></div>
+                                <div class="col-4 text-right">
+
+                                    <h6>
+                                        <strong>Ship To:</strong>
+                                    </h6>
+
+
+                                    <p style="margin: 2;">
+                                        <span t-esc="o.company_id.name"/>
+                                    </p>
+                                    <p style="margin: 2;">
+                                        <span t-esc="o.company_id.street or ''"/>
+                                    </p>
+                                    <p style="margin: 2;"><span t-esc="o.company_id.city or ''"/>,
+
+                                    </p>
+                                    <p style="margin: 2;">
+                                        <span t-esc="o.company_id.country_id.name or ''"/>
+                                    </p>
+
+                                </div>
+                            </div>
+
+
+                            <!-- Shipping Terms Section -->
+                            <div class="row">
+                                <table style="width: 100%; margin-top: 20px;">
+                                    <thead class="fw-bold">
+                                        <tr>
+                                            <th colspan="2">
+                                                <strong>Shipping Terms</strong>
+                                            </th>
+                                            <th colspan="2">
+                                                <strong>Expected Delivery</strong>
+                                            </th>
+                                            <th colspan="2">
+                                                <strong>Reference No</strong>
+                                            </th>
+                                            <th colspan="2">
+                                                <strong>Shipping #</strong>
+                                            </th>
+                                            <th colspan="2">
+                                                <strong>Carrier</strong>
+                                            </th>
+                                            <th>
+                                                <strong>Vendor Msg</strong>
+                                            </th>
+                                            <th>
+                                                <strong>Ship Method</strong>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="2" class="text-center">
+                                                                                            <span t-field="o.shipping_term"/>
+                                            </td>
+                                            <td colspan="2" class="text-center">
+                                                <span t-field="o.date_planned" t-options='{"widget": "date"}'/>
+                                            </td>
+                                            <td colspan="2" class="text-center">
+                                                <span t-field="o.name"/>
+                                            </td>
+                                            <td colspan="2" class="text-center">
+                                                                                            <span t-field="o.shipping"/>
+                                            </td>
+                                            <td colspan="2" class="text-center">
+                                                                                            <span t-field="o.carrier"/>
+                                            </td>
+                                            <td class="text-center">
+                                                                                            <span t-field="o.vendor_msg"/>
+                                            </td>
+                                            <td class="text-center">
+                                                                                            <span t-field="o.shipping_method"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Transfer SO Number Section -->
+                            <div class="row">
+                                <table style=" margin-top: 10px;">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">
+                                                <strong>Transfer SO Number</strong>
+                                            </th>
+                                            <th colspan="2">
+                                                <strong>Order Date</strong>
+                                            </th>
+                                            <th colspan="2">
+                                                <strong>Vendor</strong>
+                                            </th>
+                                            <th colspan="2">
+                                                <strong>Payment Terms</strong>
+                                            </th>
+                                            <th colspan="2">
+                                                <strong>Vendor Contact</strong>
+                                            </th>
+                                            <th>
+                                                <strong>Req Date</strong>
+                                            </th>
+                                            <th>
+                                                <strong>FOB</strong>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="2" class="text-center">
+                                                                                            <span t-field="o.customer_po"/>
+                                            </td>
+                                            <td colspan="2" class="text-center">
+                                                <span t-field="o.date_order" t-options='{"widget": "date"}'/>
+                                            </td>
+                                            <td colspan="2" class="text-center">
+                                                <span t-field="o.partner_id"/>
+                                            </td>
+                                            <td colspan="2" class="text-center">
+                                                <span t-field="o.payment_term_id"/>
+                                            </td>
+                                            <td colspan="2" class="text-center">
+                                                <span t-field="o.partner_id.phone"/>
+                                            </td>
+                                            <td class="text-center">
+                                                <t t-esc="o.date_planned" t-options='{"widget": "date"}'/>
+                                            </td>
+                                            <td class="text-center">
+                                                                                            <span t-field="o.fob"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Order Lines Section -->
+                            <div class="row">
+                                <table style=" margin-top: 20px; ">
+                                    <thead style="background-color: #d3d3d3;">
+                                        <tr>
+                                            <th colspan="2">
+                                                <strong>Item</strong>
+                                            </th>
+                                            <th colspan="2">
+                                                <strong>Description</strong>
+                                            </th>
+                                            <th>
+                                                <strong>Vendor Part</strong>
+                                            </th>
+                                            <th>
+                                                <strong>Vendor Desc</strong>
+                                            </th>
+                                            <th>
+                                                <strong>UOM</strong>
+                                            </th>
+                                            <th colspan="2">
+                                                <strong>Ship Date (Exp)</strong>
+                                            </th>
+                                            <th>
+                                                <strong>Qty</strong>
+                                            </th>
+                                            <th>
+                                                <strong>Unit Price</strong>
+                                            </th>
+                                            <th>
+                                                <strong>Total</strong>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-set="total_qty" t-value="0"/>
+
+                                        <t t-foreach="o.order_line" t-as="line">
+                                            <tr>
+                                                <td colspan="2" class="text-center">
+                                                    <t t-esc="line.product_id.name or ''"/>
+                                                </td>
+                                                <td colspan="2" class="text-center">
+                                                    <t t-esc="line.name"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <t t-esc="line.product_id.default_code"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <t t-esc="line.discount"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <t t-esc="line.product_uom.name"/>
+                                                </td>
+                                                <td colspan="2" class="text-center">
+                                                    <t t-esc="line.date_planned" t-options='{"widget": "date"}'/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <t t-esc="line.product_qty"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <t t-esc="line.price_unit"/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <t t-esc="line.price_subtotal"/>
+                                                </td>
+                                            </tr>
+                                            <t t-set="total_qty" t-value="total_qty + line.product_qty"/>
+
+                                        </t>
+                                        <tr>
+                                            <td colspan="7"></td>
+                                            <td colspan="2" style="font-size:15px;">
+                                                <strong>
+                                                    Total Qty
+                                                </strong>
+                                            </td>
+                                            <td>
+                                                <strong>
+                                                    <t t-esc="total_qty" style="text-align: center;"/>
+                                                </strong>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                            <!-- Footer -->
+                            <table class="table table-sm mt-10"
+                                   style="border: 1px solid black; border-collapse: collapse;">
+                                <!-- Total Section -->
+                                <tbody>
+                                    <div class="row p-2" style="margin-top:20px; border: 1px solid black;">
+                                        <div class="col-4">
+                                            <div>
+                                                <p>Sales Rep:
+                                                    <span t-field="o.user_id.name"/>
+                                                </p>
+                                                <p>Memo</p>
+                                                <p>Shipping Notes</p>
+                                                <p>Ship Store:
+                                                    <span t-field="o.company_id.name"/>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-4"></div>
+                                        <div class="col-4">
+                                            <div class="row">
+                                                <div class="col-5" style="text-align:left; font-size:17px;">
+                                                    <strong>
+                                                        Sub Total:
+                                                    </strong>
+                                                </div>
+                                                <div class="col-2" style="text-align:center;">USD</div>
+                                                <div class="col-5" style="text-align:right; font-size:17px;">
+                                                    <strong>
+                                                            <span t-field="o.amount_untaxed"
+                                                                  style="float: right; text-align: right;"/>
+                                                    </strong>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--                                        <div class="col-4 text-right mt-0 fw-bold">-->
+                                        <!--                                            <h5>Sub Total:-->
+                                        <!--                                                <span t-field="o.amount_untaxed"-->
+                                        <!--                                                      style="float: right; text-align: right;"/>-->
+                                        <!--                                            </h5>-->
+                                        <!--                                        </div>-->
+                                    </div>
+
+                                    <div class="row"
+                                         style="background-color: #d3d3d3; border: 1px solid black; padding: 10px; height: 60px;">
+                                        <div class="col-4"></div>
+                                        <div class="col-4"></div>
+                                        <div class="col-4 text-right">
+                                            <h4 style="background-color: #d3d3d3; margin: 0; padding: 5px;">Total:
+                                                <span t-field="o.amount_total"
+                                                      style="float: right; text-align: right;"/>
+                                            </h4>
+                                        </div>
+                                    </div>
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+        <record id="paperformat_purchase_order" model="report.paperformat">
+            <field name="name">A4 - statement</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">50</field>
+            <field name="margin_bottom">32</field>
+            <field name="margin_left">9</field>
+            <field name="margin_right">9</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">50</field>
+            <field name="dpi">90</field>
+        </record>
+        <record id="canmade_purchase_order_action" model="ir.actions.report">
+            <field name="name">purchase Order Report</field>
+            <field name="model">purchase.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">canmade_so_prints.purchase_order_temp_id</field>
+            <field name="report_file">canmade_so_prints.purchase_order_temp_id</field>
+            <field name="paperformat_id" ref="canmade_so_prints.paperformat_purchase_order"/>
+
+        </record>
+
+
+    </data>
+</odoo>

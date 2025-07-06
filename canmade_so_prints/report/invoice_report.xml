@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="canmade_invoice_report_template_id">
+            <t t-call="web.html_container">
+                <t t-call="web.basic_layout">
+                    <style>
+
+                        .custom-border-tr td, .custom-border-tr th {
+                        border: 1px solid black; /* 1px black border for td and th within tr */
+                        }
+
+                        .custom-border-td {
+                        border: 1px solid black; /* 1px black border for individual td */
+                        }
+                        /* Add font size rule */
+                        body {
+                        font-size: 10pt;
+                        }
+                    </style>
+                    <t t-foreach="docs" t-as="o">
+                        <div class="page"
+                             style="page-break-after: always; font-family: 'Times New Roman', Times, serif; color: #333;">
+                            <!-- Company Logo and Address -->
+                            <div class="header">
+                                <!-- Date and Time -->
+                                <div class="row">
+                                    <div class="col-4 text-left" style="font-size: small;">
+                                        <span t-esc="datetime.datetime.now().strftime('%d-%m-%Y %I:%M:%S %p')"/>
+                                    </div>
+                                    <div class="col-4 text-center" style="font-size: small;">
+<!--                                        <span>Printed By:-->
+<!--                                            <span t-esc="request.env.user.name"/>-->
+<!--                                        </span>-->
+                                    </div>
+                                    <div class="col-4" style="position: relative;">
+                                        <small style="position: absolute; right: 0; top: 0; font-size: small;">
+                                            <span>Page</span>
+                                            <span class="page"/>
+                                            of
+                                            <span class="topage"/>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-2">
+                                        <strong>
+                                            <img t-if="o.company_id and o.company_id.logo"
+                                                 t-att-src="image_data_uri(o.company_id.logo)"
+                                                 style="max-height: 80px; max-width: 80%; margin-top: 15px;"
+                                                 alt="Logo"/>
+
+                                        </strong>
+                                    </div>
+                                    <div class="col-4 text-left"
+                                         style="font-size: small;padding-left: 0; margin-left: 0; margin-right: 0;margin-top: 15px;margin-bottom: 0;">
+                                        <strong t-field="o.company_id.name"/>
+                                        <div>
+                                            <p t-field="o.company_id.partner_id.contact_address" style="margin: 0;"/>
+                                        </div>
+                                        <div>
+                                            <p t-if="o.company_id.phone" style="margin: 0;">Phone:
+                                                <span t-field="o.company_id.phone"/>
+                                            </p>
+                                            <p t-if="o.company_id.email" style="margin: 0;">Email:
+                                                <span t-field="o.company_id.email"/>
+                                            </p>
+                                            <p t-if="o.company_id.website" style="margin: 0;">Website:
+                                                <span t-field="o.company_id.website"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-4" style="tex-right"></div>
+                                    <div class="col-2" style="tex-right; margin-top: 15px;">
+                                        <p></p>
+                                        <p></p>
+                                        <p></p>
+                                        <h3>
+                                            <strong>INVOICE</strong>
+                                        </h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr style="border-top: 1px solid #000; margin: 10px 0;"/>
+
+                            <div class="row" style="font-family: 'Times New Roman', Times, serif;">
+                                <div class="col-4">
+
+                                    <div class="row" style="background-color: #bac2bb;">
+                                        <strong>Bill To:</strong>
+                                    </div>
+
+                                    <p style="margin: 0;">
+                                        <span t-field="o.partner_id"/>
+                                    </p>
+                                    <p style="margin: 0;"><span t-field="o.partner_id.street"/>,
+                                        <span t-field="o.partner_id.street2"/>
+                                    </p>
+                                    <p style="margin: 0;"><span t-field="o.partner_id.city"/>,
+                                        <span t-field="o.partner_id.state_id"/>,
+                                        <span t-field="o.partner_id.zip"/>
+                                    </p>
+                                    <p style="margin: 0;">
+                                        <span t-field="o.partner_id.phone"/>
+                                    </p>
+                                    <p style="margin: 0;">
+                                        <span t-field="o.partner_id.email"/>
+                                    </p>
+                                </div>
+                                <div class="col-4">
+                                    <div class="row" style="background-color: #bac2bb;">
+                                        <strong>-</strong>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-right">
+
+                                    <div class="row" style="background-color: #bac2bb;">
+                                        <strong>Ship To:</strong>
+                                    </div>
+                                    <p style="margin: 0;">
+                                        <span t-field="o.partner_shipping_id"/>
+                                    </p>
+                                    <p style="margin: 0;"><span t-field="o.partner_shipping_id.street"/>,
+                                        <span t-field="o.partner_shipping_id.street2"/>
+                                    </p>
+                                    <p style="margin: 0;"><span t-field="o.partner_shipping_id.city"/>,
+                                        <span t-field="o.partner_shipping_id.state_id"/>,
+                                        <span t-field="o.partner_shipping_id.zip"/>
+                                    </p>
+                                    <p style="margin: 0;">
+                                        <span t-field="o.partner_shipping_id.phone"/>
+                                    </p>
+                                    <p style="margin: 0;">
+                                        <span t-field="o.partner_shipping_id.email"/>
+                                    </p>
+                                </div>
+                            </div>
+                            <table class="table table-sm mt-4 table-borderless"
+                                   style="width: 100%;font-family: 'Times New Roman', Times, serif;">
+                                <thead style="background-color: #bac2bb;">
+                                    <tr>
+                                        <th>
+                                            <strong>Shipping Terms</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Ship Method</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Carrier</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Shipping Date</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Shipping Amount</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Shipping Tax</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Customer PST#</strong>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="shipping"
+                                       t-value="o.invoice_line_ids.filtered(lambda rec: rec.product_id.type == 'service')"/>
+                                    <t t-set="carrier" t-value="o.invoice_line_ids.sale_line_ids"/>
+                                    <tr>
+                                        <td>
+                                            <t t-esc="shipping[0].shipping_term"/>
+                                        </td>
+                                        <td>
+                                            <t t-if="shipping">
+                                                <t t-esc="o.invoice_line_ids.sale_line_ids.order_id.carrier_id.name"/>
+                                            </t>
+                                        </td>
+                                        <td>
+                                            <t t-if="shipping">
+                                                <t t-esc="shipping[0].carrier.name"/>
+                                            </t>
+                                        </td>
+                                        <td style="text-align:center;">
+                                            <t t-if="carrier">
+                                                <t t-esc="shipping[0].shipping_date"/>
+                                            </t>
+                                        </td>
+                                        <td class="text-center" >
+                                            <t t-esc="shipping[0].display_price"/>
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-esc="shipping[0].shipping_tax"/>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <table class="table table-sm mt-4 table-borderless"
+                                   style="width: 100%; font-family: 'Times New Roman', Times, serif;">
+                                <thead style="background-color: #bac2bb;">
+                                    <tr>
+                                        <th>
+                                            <strong>Invoice Date</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Due Date</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Order Date</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Customer</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Payment Terms</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Ref Number</strong>
+                                        </th>
+                                        <th>
+                                            <strong>Customer PO</strong>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <span t-field="o.invoice_date" t-options='{"widget": "date"}'/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="o.invoice_date_due"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="o.invoice_line_ids.sale_line_ids.order_id.date_order"
+                                               t-options='{"widget": "date"}'/>
+                                        </td>
+                                        <td>
+                                            <span t-field="o.partner_id"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="o.invoice_payment_term_id"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="o.name"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="o.customer_po"/>
+                                        </td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+
+
+                            <!-- Items Table -->
+                            <table class="table table-sm mt-4 table-borderless"
+                                   style="width: 100%; font-family: 'Times New Roman', Times, serif;">
+                                <thead style="background-color: #bac2bb;">
+                                    <tr>
+                                        <th style="text-align: left; padding: 5px;">
+                                            <strong>Item</strong>
+                                        </th>
+                                        <th style="text-align: left; padding: 5px;">
+                                            <strong>Description</strong>
+                                        </th>
+                                        <th style="text-align: right; padding: 5px;">
+                                            <strong>Quantity</strong>
+                                        </th>
+                                        <th style="text-align: right; padding: 5px;">
+                                            <strong>Uom</strong>
+                                        </th>
+                                        <th style="text-align: right; padding: 5px;">
+                                            <strong>Effec Unit Price (EUP)
+                                            </strong>
+                                        </th>
+                                        <th style="text-align: right; padding: 5px;">
+                                            <strong>Subtotal</strong>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="o.invoice_line_ids" t-as="line">
+                                        <tr>
+                                            <td style="padding: 5px;">
+                                                <t t-esc="line.product_id.id"/>
+                                            </td>
+                                            <td style="padding: 5px;">
+                                                <t t-esc="line.name"/>
+                                            </td>
+                                            <td style="text-align: right; padding: 5px;">
+                                                <t t-esc="line.quantity"/>
+                                            </td>
+                                            <td style="text-align: center; padding: 5px;">
+                                                <t t-esc="line.product_uom_id.name"/>
+                                            </td>
+                                            <td style="text-align: center; padding: 5px;">
+                                                <t t-esc="line.price_unit"
+                                                />
+                                            </td>
+                                            <td style="text-align: right; padding: 5px;">
+                                                <t t-esc="line.price_subtotal"
+                                                />
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                            <table class="table table-sm mt-1 table-borderless"
+                                   style="width: 100%; font-family: 'Times New Roman', Times, serif;">
+                                <div class="row">
+                                    <div class="col-6"></div>
+                                    <div class="col-6" style="background-color: black; height: 2px;"></div>
+                                </div>
+                            </table>
+
+                            <!-- Summary Section -->
+                            <table class="table table-sm mt-4"
+                                   style="width: 100%; font-family: 'Times New Roman', Times, serif;">
+                                <!-- Total Section -->
+                                <tbody>
+                                    <tr>
+                                        <div class="row mt-4">
+                                            <div class="col-4">
+                                                <div>
+                                                    <p>Sales Rep:
+                                                        <span t-field="o.invoice_user_id.name"/>
+                                                    </p>
+                                                    <p>Memo</p>
+                                                    <p>Shipping Notes</p>
+                                                    <p>Ship Store:
+                                                        <span t-field="o.invoice_line_ids.sale_line_ids.order_id.warehouse_id.name"/>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="col-4"></div>
+                                            <div class="col-4 text-right mt-4">
+                                                <h6>
+                                                    <strong>
+                                                        <p>Subtotal:
+                                                            <span style="float: right;">
+                                                                <span t-field="o.amount_untaxed"/>
+                                                            </span>
+
+                                                        </p>
+                                                    </strong>
+                                                </h6>
+
+                                                <p></p>
+                                                <h6>
+                                                    <strong>
+                                                        <p>Taxes:
+                                                            <span style="float: right;">
+                                                                <span t-field="o.amount_tax"/>
+                                                            </span>
+                                                        </p>
+                                                    </strong>
+                                                </h6>
+                                            </div>
+
+                                        </div>
+                                        <div class="row" style="background-color: #d3d3d3;">
+                                            <div class="col-4"></div>
+                                            <div class="col-6 p-3">
+                                                <h5 style="background-color: #d3d3d3;">
+                                                    Total:
+                                                    <span t-field="o.amount_total"
+                                                          style="float: right; text-align: right;"/>
+                                                </h5>
+                                                <h5 style="background-color: #d3d3d3;">
+                                                    Amount Paid:
+                                                    <span style="float: right; text-align: right;">$
+                                                        <t t-esc="o.amount_total - o.amount_residual"/>
+                                                    </span>
+                                                </h5>
+<!--                                                <h5 style="background-color: #d3d3d3;">-->
+<!--                                                    Credit/Deposit/Discount:-->
+<!--                                                    <span t-field="o.amount_total"-->
+<!--                                                          style="float: right; text-align: right;"/>-->
+<!--                                                </h5>-->
+                                                <h5 style="background-color: #d3d3d3;">
+                                                    Balance Due:
+                                                    <span t-field="o.amount_residual"
+                                                          style="float: right; text-align: right;"/>
+                                                </h5>
+                                            </div>
+                                        </div>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Footer Section -->
+                            <div class="row">
+                                <p style="font-size: 12px; font-family: 'Times New Roman', Times, serif;font-weight: bold;">
+
+                                    Here's the text from the image exactly as it appears:
+
+                                    No refunds. Merchandise can only be accepted for return per our discretion under
+                                    extenuating circumstances and is subject to a restocking fee of 20% if accepted. All
+                                    sales are exchange only and contingent on intact, sellable condition. Invoice is due
+                                    on receipt unless a written mutual agreement provides otherwise. Overdue invoices
+                                    will incur a 2% monthly interest charge (24% per annum).
+
+                                    Claims for goods not delivered must be made within 7 business days. No claims will
+                                    be accepted after 7 business days. Goods are shipped at buyers risk after delivery
+                                    to carrier. Any issues should be brought to the carrier's attention at time of
+                                    delivery, if you can't reach the carrier please inform us immediately. Camnade
+                                    Hardware is not liable for any damage(s) or loss of goods in transit with a carrier.
+
+                                    Please quote our invoice number with your remittance. Please contact us if you have
+                                    any questions at (416) 798-7198 ext. 0.
+                                </p>
+                            </div>
+                            <div>
+
+
+                                <table class="table table-sm mt-4"
+                                       style="width: 100%; font-family: 'Times New Roman', Times, serif;">
+                                    <thead>
+                                        <p>
+                                            <h3>
+                                                <strong>Items on Back Order</strong>
+                                            </h3>
+                                        </p>
+                                        <div class="row" style="background-color: #d3d3d3;">
+
+                                            <div class="col-3">SKU</div>
+                                            <div class="col-3">Description</div>
+                                            <div class="col-3">UOM</div>
+                                            <div class="col-3">BackOdr</div>
+                                        </div>
+                                    </thead>
+                                    <tbody>
+                                        <div class="row">
+                                            <div class="col-3">HM0692SC25B</div>
+                                            <div class="col-3">128mm CC Satin Nickel Handle</div>
+                                            <div class="col-3">Each</div>
+                                            <div class="col-3">500</div>
+                                        </div>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+        <!--        <record id="paperformat_invoice_custome_report" model="report.paperformat">-->
+        <!--            <field name="name">A4 - statement</field>-->
+        <!--            <field name="default" eval="True"/>-->
+        <!--            <field name="format">A4</field>-->
+        <!--            <field name="page_height">0</field>-->
+        <!--            <field name="page_width">0</field>-->
+        <!--            <field name="orientation">Portrait</field>-->
+        <!--            <field name="margin_top">50</field>-->
+        <!--            <field name="margin_bottom">32</field>-->
+        <!--            <field name="margin_left">7</field>-->
+        <!--            <field name="margin_right">7</field>-->
+        <!--            <field name="header_line" eval="False"/>-->
+        <!--            <field name="header_spacing">15</field>-->
+        <!--            <field name="dpi">90</field>-->
+        <!--        </record>-->
+        <record id="paperformat_invoice_report" model="report.paperformat">
+            <field name="name">A4 - statement</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">40</field>
+            <field name="margin_bottom">32</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">40</field>
+            <field name="dpi">90</field>
+        </record>
+        <record id="canmade_invoice_report_action" model="ir.actions.report">
+            <field name="name">Invoice Report</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="paperformat_id" ref="canmade_so_prints.paperformat_invoice_report"/>
+            <field name="report_name">canmade_so_prints.canmade_invoice_report_template_id</field>
+            <field name="report_file">canmade_so_prints.canmade_invoice_report_template_id</field>
+            <!--            <field name="paperformat_id" ref="paperformat_invoice_custome_report"/>-->
+
+        </record>
+
+
+    </data>
+</odoo>
